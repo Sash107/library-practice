@@ -16,7 +16,7 @@ app=FastAPI()
 load_dotenv()
 
 llm=ChatGroq(
-    model="meta-llama/llama-4-scout-17b-16e-instruct",
+    model="openai/gpt-oss-120b",
     temperature=0.5
 )
 

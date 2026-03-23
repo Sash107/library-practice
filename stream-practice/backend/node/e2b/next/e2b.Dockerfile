@@ -17,7 +17,7 @@ WORKDIR /home/user/myapp
 RUN npx --yes shadcn@2.6.3 init --yes -b neutral --force
 RUN npx --yes shadcn@2.6.3 add --all --yes
 
-RUN npm install tw-animate-css
+RUN npm install tw-animate-css tailwind-merge clsx
 
 RUN npm install
 
