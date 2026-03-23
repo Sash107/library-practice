@@ -4,6 +4,8 @@ export const router=Router();
 
 router.post("/chat",async(req,res)=>{
     const {my_message}=req.body
+    let mycode=""
+    console.log(my_message)
     try{
         const python_response=await fetch("http://localhost:8000/ask-llm",{
             method:"POST",
@@ -23,11 +25,11 @@ router.post("/chat",async(req,res)=>{
             return
         }
         while(true){
-
             const {done,value}=await reader.read();
             if(done) break;
             const chunk=decoder.decode(value,{stream:true});
             res.write(chunk);
+            mycode+=chunk;
         }
         res.end();
     }catch(error){
