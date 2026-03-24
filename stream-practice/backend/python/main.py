@@ -6,6 +6,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import List, Literal
 from system_prompt import SYSTEM_PROMPT
+from langchain_openrouter import ChatOpenRouter
+
 class Chat(BaseModel):
     role: Literal["user","assistant","system"]
     content:str
@@ -17,7 +19,12 @@ load_dotenv()
 
 llm=ChatGroq(
     model="openai/gpt-oss-120b",
-    temperature=0.5
+    temperature=0.1,
+    max_tokens=6000,
+)
+model = ChatOpenRouter(
+    model="stepfun/step-3.5-flash:free",
+    temperature=0.8,
 )
 
 def convert_messages(messages):
@@ -39,6 +46,7 @@ def ask_llm(message):
             buffer+=chunk.content
             lines=buffer.split("\n")
 
+            print(buffer)
             for line in lines[:-1]:
                 yield line +"\n"
                 print(line)
@@ -51,3 +59,8 @@ def stream(request:ChatRequest):
     lc_messages = convert_messages(request.messages)
     print(lc_messages)
     return StreamingResponse(ask_llm(lc_messages),media_type="text/plain")
+
+@app.post("/test")
+def test(request:ChatRequest):
+    res=llm.invoke(input="What is the capital of UAE")
+    return res.content

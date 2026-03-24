@@ -13,15 +13,7 @@ router.post("/chat",async(req,res)=>{
     console.log(my_message)
     try{
         const sandbox=await connectSandbox(sandboxID);
-        await sandbox.files.write(
-        "/home/user/myapp/lib/utils.ts",
-        `import { clsx, type ClassValue } from "clsx";
-        import { twMerge } from "tailwind-merge";
 
-        export function cn(...inputs: ClassValue[]) {
-        return twMerge(clsx(inputs));
-        }`
-        );
         const python_response=await fetch("http://localhost:8000/ask-llm",{
             method:"POST",
             headers:{"content-type":"application/json"},
@@ -41,13 +33,14 @@ router.post("/chat",async(req,res)=>{
         }
 
         let mycode=""
+        let fullcode=""
         while(true){
             const {done,value}=await reader.read();
             if(done) break;
             const chunk=decoder.decode(value,{stream:true});
             res.write(chunk);
             mycode+=chunk;
-
+            fullcode+=chunk;
             while(mycode.includes(CLOSE_TAG)){
                 const closeIndex=mycode.indexOf(CLOSE_TAG);
                 const block=mycode.slice(0,closeIndex+CLOSE_TAG.length);
@@ -66,26 +59,11 @@ router.post("/chat",async(req,res)=>{
                 console.log("------------------------------------------------------")
 
                 try{
-                    const PROTECTED_FILES = [
-                    "app/globals.css",
-                    "styles/globals.css",
-                    "tailwind.config.js",
-                    "tailwind.config.ts",
-                    "postcss.config.js",
-                    "next.config.js",
-                    "next.config.ts",
-                    "tsconfig.json",
-                    ];
                     const fullPath=`/home/user/myapp/${file_path}`;
 
-                    if (PROTECTED_FILES.includes(file_path)) {
-                        console.log(`⏭ Skipped protected file: ${file_path}`);
-                        continue;
-                        }
-
-                    await sandbox.commands.run(`mkdir -p $(dirname ${fullPath})`);
+                    await sandbox.commands.run(`mkdir -p $(dirname "${fullPath}")`);
                     await sandbox.files.write(fullPath,content);
-                    console.log(`✓ Written: ${file_path}`);
+                    console.log(`✓ Written: ${file_path}`); 
                 }catch(err){
                     console.error("Error writing to sandbox:", err);
                 }
@@ -94,8 +72,9 @@ router.post("/chat",async(req,res)=>{
         }
         await sandbox.commands.run(
             `cd /home/user/myapp && npm install`,
-            { timeoutMs: 60000 }
+            { timeoutMs: 120_000 }
         );
+            console.log("Done");
         res.end();
     }catch(error: any){
         console.error("Error in chat route:",error);

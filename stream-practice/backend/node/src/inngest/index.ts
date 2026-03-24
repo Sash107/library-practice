@@ -9,7 +9,6 @@ const e2b_sandbox=inngest.createFunction({id:"create-sandbox",triggers:[{event:"
         return sandbox.sandboxId
     })
 
-    await step.sleep("wait 3 seconds",3000);
 
     const sandboxUrl=await step.run("get-url-nextApp",async()=>{
         const sandbox=await Sandbox.connect(sandboxId);
