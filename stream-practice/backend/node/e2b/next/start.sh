@@ -1,9 +1,21 @@
 #!/bin/bash
 
-# Auto-restart the Next.js dev server if it crashes (e.g. after npm install)
+APP_DIR="/home/user/myapp"
+
+trap "echo 'Stopping...'; exit 0" SIGINT SIGTERM
+
+cd $APP_DIR || exit 1
+
+if [ ! -d "node_modules" ]; then
+  echo "Installing dependencies with npm..."
+  npm install
+fi
+
 while true; do
   echo "Starting Next.js dev server..."
-  cd /home/user/myapp && npx next dev --turbopack --port 3000
-  echo "Dev server exited, restarting in 2s..."
+
+  npm run dev -- --turbo --port 3000
+
+  echo "Dev server exited. Restarting in 2 seconds..."
   sleep 2
 done

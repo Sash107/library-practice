@@ -1,17 +1,19 @@
 # This is a config for E2B sandbox template.
-# You can use template ID (8g39z8zkajiwpivbrir6) or template name (stream-practice) to create a sandbox:
+# You can use template ID (9ff0iqyce1evzemoyng3) or template name (new-stream) to create a sandbox:
 
 # Python SDK
 # from e2b import Sandbox, AsyncSandbox
-# sandbox = Sandbox.create("stream-practice") # Sync sandbox
-# sandbox = await AsyncSandbox.create("stream-practice") # Async sandbox
+# sandbox = Sandbox.create("new-stream") # Sync sandbox
+# sandbox = await AsyncSandbox.create("new-stream") # Async sandbox
 
 # JS SDK
 # import { Sandbox } from 'e2b'
-# const sandbox = await Sandbox.create('stream-practice')
+# const sandbox = await Sandbox.create('new-stream')
 
 team_id = "c55d64da-9dfc-4969-a81a-b1ea9f4df688"
-start_cmd = "/bin/bash /home/user/start.sh"
+memory_mb = 4_096
+cpu_count = 8
+start_cmd = "./start.sh"
 dockerfile = "e2b.Dockerfile"
-template_name = "stream-practice"
-template_id = "8g39z8zkajiwpivbrir6"
+template_name = "new-stream"
+template_id = "9ff0iqyce1evzemoyng3"

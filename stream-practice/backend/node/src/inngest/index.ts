@@ -5,7 +5,7 @@ export const inngest=new Inngest({id:"my-app"})
 
 const e2b_sandbox=inngest.createFunction({id:"create-sandbox",triggers:[{event:"start/sandbox"}]},async({event,step})=>{
     const sandboxId=await step.run("getSandbox",async()=>{
-        const sandbox= await Sandbox.create("stream-practice")
+        const sandbox= await Sandbox.create("new-stream",{timeoutMs:1_800_000})
         return sandbox.sandboxId
     })
 
