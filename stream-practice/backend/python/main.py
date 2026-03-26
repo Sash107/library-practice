@@ -7,6 +7,8 @@ from pydantic import BaseModel
 from typing import List, Literal
 from system_prompt import SYSTEM_PROMPT
 from langchain_openrouter import ChatOpenRouter
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_deepseek import ChatDeepSeek
 
 class Chat(BaseModel):
     role: Literal["user","assistant","system"]
@@ -19,12 +21,23 @@ load_dotenv()
 
 llm=ChatGroq(
     model="openai/gpt-oss-120b",
-    temperature=0.1,
-    max_tokens=6000,
+    temperature=0,
+    max_tokens=8000
 )
 model = ChatOpenRouter(
     model="stepfun/step-3.5-flash:free",
-    temperature=0.8,
+    temperature=0,
+)
+
+model2=ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    )
+
+llm2 = ChatDeepSeek(
+    model="deepseek-reasoner",
+    temperature=0,
+    max_tokens=None,
+    timeout=None,
 )
 
 def convert_messages(messages):
@@ -41,12 +54,11 @@ def convert_messages(messages):
 def ask_llm(message):
     buffer=""
     final_messages = [SystemMessage(content=SYSTEM_PROMPT)] + message
-    for chunk in llm.stream(final_messages):
+    for chunk in llm2.stream(final_messages):
         if chunk.content:
             buffer+=chunk.content
             lines=buffer.split("\n")
 
-            print(buffer)
             for line in lines[:-1]:
                 yield line +"\n"
                 print(line)
