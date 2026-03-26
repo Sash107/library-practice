@@ -1,12 +1,21 @@
+#!/bin/bash
 
-function ping_server() {
-  response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000")
-  while [[ ${response} -ne 200 ]]; do
-    sleep 0.1
-    response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:3000")
-  done
-  echo "Server ready!"
-}
+APP_DIR="/home/user/myapp"
 
-ping_server &
-cd /home/user/myapp && npx next dev --turbopack
+trap "echo 'Stopping...'; exit 0" SIGINT SIGTERM
+
+cd $APP_DIR || exit 1
+
+if [ ! -d "node_modules" ]; then
+  echo "Installing dependencies with npm..."
+  npm install
+fi
+
+while true; do
+  echo "Starting Next.js dev server..."
+
+  npm run dev -- --turbo --port 3000
+
+  echo "Dev server exited. Restarting in 2 seconds..."
+  sleep 2
+done
